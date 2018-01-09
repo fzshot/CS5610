@@ -1,0 +1,15 @@
+server {
+	listen 80;
+	listen [::]:80;
+
+	root /home/czeng/www/main;
+
+	index index.html;
+
+	server_name czeng.me www.czeng.me;
+
+	location / {
+		try_files $uri $uri/ =404;
+	}
+}
+
