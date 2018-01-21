@@ -4,7 +4,7 @@
     border: .2rem dashed blue;
 }
 .right {
-    float: right;
+    float: left;
     width: 66.67%;
     border: .2rem dashed red;
 }
