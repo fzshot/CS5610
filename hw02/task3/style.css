@@ -1,14 +1,17 @@
 .left {
     float: left;
-    width: 33%;
+    width: 33.33%;
+    border: .2rem dashed blue;
 }
 .right {
-    float: left;
-    width: 67%;
+    float: right;
+    width: 66.67%;
+    border: .2rem dashed red;
 }
 .pair {
     overflow: auto;
-    border: .5rem dashed darkturquoise;
+    border: .2rem dashed darkturquoise;
+    display: flex;
 }
 h1 {
     text-align: center;
