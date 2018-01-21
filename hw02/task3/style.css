@@ -1,13 +1,14 @@
-.leftcol {
+.left {
     float: left;
     width: 33%;
 }
-.rightcol {
+.right {
     float: left;
     width: 67%;
 }
 .pair {
     overflow: auto;
+    border: .5rem dashed darkturquoise;
 }
 h1 {
     text-align: center;
