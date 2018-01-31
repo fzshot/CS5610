@@ -3,45 +3,66 @@ defmodule Calc do
   Documentation for Calc.
   """
 
-  @doc """
-  Hello world.
+  # @doc """
+  # Hello world.
 
-  ## Examples
+  # ## Examples
 
-      iex> Calc.hello
-      :world
+  #     iex> Calc.hello
+  #     :world
 
-  """
+  # """
 
-  def main() do
-    IO.gets("Enter input: ")
-    |> String.split(" ")
-    |> eval([])
-    main()
+  def main(input) do
+    # IO.gets("Enter input: ")
+    # |> String.split()
+    # |> eval([], [])
+    # main()
+    String.split(input)
+    |> eval([], [])
   end
 
-  def eval(input, processing ) do
+  def eval(input, f, numbers) do
     cond do
       Enum.empty?(input) ->
         cond do
-          length(processing) == 1->
-            hd(processing)
-            |> IO.puts()
+          length(numbers) == 1 ->
+            hd(numbers)
           true ->
-            [a,o,b|t] = processing
+            [sign|tF] = f
+            [a,b|tNumber] = numbers
             cond do
-              is_number(a) ->
-                cond do
-                  o == "+" ->
-                    eval(input, [a+b] ++ t)
-                  o == "-" ->
-                    eval(input, [a-b] ++ t)
-                end
+              sign == "+" ->
+                eval(input, tF, [a+b] ++ tNumber)
+              sign == "-" ->
+                eval(input, tF, [a-b] ++ tNumber)
+              sign == "*" ->
+                eval(input, tF, [a-b] ++ tNumber)
+              sign == "/" ->
+                eval(input, tF, [a/b] ++ tNumber)
               true ->
-                IO.puts("Not implemented")
+                "test"
             end
+        end
+      true ->
+        [h|t] = input
+        cond do
+          (h == "+") or (h == "-") ->
+            eval(t, f ++ [h], numbers)
+          (h == "*") or (h == "/") ->
+            eval(t, [h] ++ f, numbers)
+          true ->
+            h = String.to_integer(h)
+            eval(t, f, numbers ++ [h])
         end
     end
   end
+
+  # def findP(f, pList, newF) do
+  #   cond do
+  #     Enum.empty?(pList) ->
+        
+  #   end
+  # end
 
 end
