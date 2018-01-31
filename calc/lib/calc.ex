@@ -19,15 +19,7 @@ defmodule Calc do
     # |> eval([], [])
     # main()
     String.split(input)
-    |> Enum.map(fn(x) ->
-      cond do
-        (x == "+") or (x == "-") or (x == "*") or (x == "/") ->
-          x
-        true ->
-          String.to_integer(x)
-      end
-    end)
-    |> eval
+    |> parse_number
   end
 
   def eval(input) do
@@ -51,6 +43,19 @@ defmodule Calc do
             eval([a / b] ++ t)
         end
     end
+  end
+
+  def parse_number(input) do
+    input
+    |> Enum.map(fn(x) ->
+      cond do
+        (x == "+") or (x == "-") or (x == "*") or (x == "/") ->
+          x
+        true ->
+          elem(Float.parse(x), 0)
+      end
+    end)
+    |> eval
   end
   # def eval(input, f, numbers) do
   #   cond do
