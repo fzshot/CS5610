@@ -18,7 +18,7 @@ defmodule Calc do
     # |> String.split()
     # |> eval([], [])
     # main()
-    String.split(input)
+    input
     |> parse_number
   end
 
@@ -29,27 +29,55 @@ defmodule Calc do
       true ->
         [a,s|t] = input
         cond do
-          s == "+" ->
-            a + eval(t)
-          s == "-" ->
-            [b|t] = t
-            b = -1 * b
-            a + eval([b] ++ t)
-          s == "*" ->
-            [b|t] = t
-            eval([a * b] ++ t)
-          s == "/" ->
-            [b|t] = t
-            eval([a / b] ++ t)
+          is_number(a) ->
+            cond do
+              s == "+" ->
+                a + eval(t)
+              s == "-" ->
+                [b|t] = t
+                b = -1 * b
+                a + eval([b] ++ t)
+              s == "*" ->
+                [b|t] = t
+                cond do
+                  b == "(" ->
+                    [head, tail] = find_par(["("], [], [s] ++ t)
+                    head = eval(tl(head))
+                    eval([a * head] ++ tail)
+                  true ->
+                    eval([a * b] ++ t)
+                end
+              s == "/" ->
+                [b|t] = t
+                cond do
+                  b == "(" ->
+                    [head, tail] = find_par(["("], [], [s] ++ t)
+                    head = eval(tl(head))
+                    eval([a / head] ++ tail)
+                  true ->
+                    eval([a / b] ++ t)
+                end
+            end
+          true ->
+            [head, tail] = find_par(["("], [], [s] ++ t)
+            head = eval(head)
+            eval([head] ++ tail)
         end
     end
   end
 
   def parse_number(input) do
     input
+    |> String.replace("(", " ( ")
+    |> String.replace(")", " ) ")
+    |> String.replace("+", " + ")
+    |> String.replace("-", " - ")
+    |> String.replace("*", " * ")
+    |> String.replace("/", " / ")
+    |> String.split
     |> Enum.map(fn(x) ->
       cond do
-        (x == "+") or (x == "-") or (x == "*") or (x == "/") ->
+        (x == "+") or (x == "-") or (x == "*") or (x == "/") or (x == "(") or (x == ")")->
           x
         true ->
           elem(Float.parse(x), 0)
@@ -57,47 +85,23 @@ defmodule Calc do
     end)
     |> eval
   end
-  # def eval(input, f, numbers) do
-  #   cond do
-  #     Enum.empty?(input) ->
-  #       cond do
-  #         length(numbers) == 1 ->
-  #           hd(numbers)
-  #         true ->
-  #           [sign|tF] = f
-  #           [a,b|tNumber] = numbers
-  #           cond do
-  #             sign == "+" ->
-  #               eval(input, tF, [a+b] ++ tNumber)
-  #             sign == "-" ->
-  #               eval(input, tF, [a-b] ++ tNumber)
-  #             sign == "*" ->
-  #               eval(input, tF, [a-b] ++ tNumber)
-  #             sign == "/" ->
-  #               eval(input, tF, [a/b] ++ tNumber)
-  #             true ->
-  #               "test"
-  #           end
-  #       end
-  #     true ->
-  #       [h|t] = input
-  #       cond do
-  #         (h == "+") or (h == "-") ->
-  #           eval(t, f ++ [h], numbers)
-  #         (h == "*") or (h == "/") ->
-  #           eval(t, [h] ++ f, numbers)
-  #         true ->
-  #           h = String.to_integer(h)
-  #           eval(t, f, numbers ++ [h])
-  #       end
-  #   end
-  # end
 
-  # def findP(f, pList, newF) do
-  #   cond do
-  #     Enum.empty?(pList) ->
-        
-  #   end
-  # end
+  def find_par(par, head, tail) do
+    cond do
+      Enum.empty?(par) ->
+        [head, tail]
+      true ->
+        [h_tail|t_tail] = tail
+        # IO.inspect(h_tail)
+        cond do
+          h_tail == "(" ->
+            find_par(["("] ++ par, head, t_tail)
+          h_tail == ")" ->
+            find_par(tl(par), head, t_tail)
+          true ->
+            find_par(par, head ++ [h_tail], t_tail)
+        end
+    end
+  end
 
 end
