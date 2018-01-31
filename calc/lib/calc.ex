@@ -19,44 +19,74 @@ defmodule Calc do
     # |> eval([], [])
     # main()
     String.split(input)
-    |> eval([], [])
+    |> Enum.map(fn(x) ->
+      cond do
+        (x == "+") or (x == "-") or (x == "*") or (x == "/") ->
+          x
+        true ->
+          String.to_integer(x)
+      end
+    end)
+    |> eval
   end
 
-  def eval(input, f, numbers) do
+  def eval(input) do
     cond do
-      Enum.empty?(input) ->
-        cond do
-          length(numbers) == 1 ->
-            hd(numbers)
-          true ->
-            [sign|tF] = f
-            [a,b|tNumber] = numbers
-            cond do
-              sign == "+" ->
-                eval(input, tF, [a+b] ++ tNumber)
-              sign == "-" ->
-                eval(input, tF, [a-b] ++ tNumber)
-              sign == "*" ->
-                eval(input, tF, [a-b] ++ tNumber)
-              sign == "/" ->
-                eval(input, tF, [a/b] ++ tNumber)
-              true ->
-                "test"
-            end
-        end
+      length(input) == 1 ->
+          hd(input)
       true ->
-        [h|t] = input
+        [a,s|t] = input
         cond do
-          (h == "+") or (h == "-") ->
-            eval(t, f ++ [h], numbers)
-          (h == "*") or (h == "/") ->
-            eval(t, [h] ++ f, numbers)
-          true ->
-            h = String.to_integer(h)
-            eval(t, f, numbers ++ [h])
+          s == "+" ->
+            a + eval(t)
+          s == "-" ->
+            [b|t] = t
+            b = -1 * b
+            a + eval([b] ++ t)
+          s == "*" ->
+            [b|t] = t
+            eval([a * b] ++ t)
+          s == "/" ->
+            [b|t] = t
+            eval([a / b] ++ t)
         end
     end
   end
+  # def eval(input, f, numbers) do
+  #   cond do
+  #     Enum.empty?(input) ->
+  #       cond do
+  #         length(numbers) == 1 ->
+  #           hd(numbers)
+  #         true ->
+  #           [sign|tF] = f
+  #           [a,b|tNumber] = numbers
+  #           cond do
+  #             sign == "+" ->
+  #               eval(input, tF, [a+b] ++ tNumber)
+  #             sign == "-" ->
+  #               eval(input, tF, [a-b] ++ tNumber)
+  #             sign == "*" ->
+  #               eval(input, tF, [a-b] ++ tNumber)
+  #             sign == "/" ->
+  #               eval(input, tF, [a/b] ++ tNumber)
+  #             true ->
+  #               "test"
+  #           end
+  #       end
+  #     true ->
+  #       [h|t] = input
+  #       cond do
+  #         (h == "+") or (h == "-") ->
+  #           eval(t, f ++ [h], numbers)
+  #         (h == "*") or (h == "/") ->
+  #           eval(t, [h] ++ f, numbers)
+  #         true ->
+  #           h = String.to_integer(h)
+  #           eval(t, f, numbers ++ [h])
+  #       end
+  #   end
+  # end
 
   # def findP(f, pList, newF) do
   #   cond do
