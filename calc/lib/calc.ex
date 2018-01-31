@@ -24,6 +24,8 @@ defmodule Calc do
 
   def eval(input) do
     cond do
+      is_number(input) ->
+        input
       length(input) == 1 ->
           hd(input)
       true ->
@@ -41,8 +43,8 @@ defmodule Calc do
                 [b|t] = t
                 cond do
                   b == "(" ->
-                    [head, tail] = find_par(["("], [], [s] ++ t)
-                    head = eval(tl(head))
+                    [head, tail] = find_par(["("], [], t)
+                    head = eval(head)
                     eval([a * head] ++ tail)
                   true ->
                     eval([a * b] ++ t)
@@ -51,8 +53,8 @@ defmodule Calc do
                 [b|t] = t
                 cond do
                   b == "(" ->
-                    [head, tail] = find_par(["("], [], [s] ++ t)
-                    head = eval(tl(head))
+                    [head, tail] = find_par(["("], [], t)
+                    head = eval(head)
                     eval([a / head] ++ tail)
                   true ->
                     eval([a / b] ++ t)
@@ -92,14 +94,18 @@ defmodule Calc do
         [head, tail]
       true ->
         [h_tail|t_tail] = tail
-        # IO.inspect(h_tail)
         cond do
           h_tail == "(" ->
             find_par(["("] ++ par, head, t_tail)
           h_tail == ")" ->
-            find_par(tl(par), head, t_tail)
+            find_par(tl(par), eval(head), t_tail)
           true ->
-            find_par(par, head ++ [h_tail], t_tail)
+            cond do
+              is_number(head) ->
+                find_par(par, [head] ++ [h_tail], t_tail)
+              true ->
+                find_par(par, head ++ [h_tail], t_tail)
+            end
         end
     end
   end

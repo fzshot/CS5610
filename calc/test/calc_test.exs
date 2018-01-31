@@ -20,6 +20,10 @@ defmodule CalcTest do
     assert_in_delta Calc.main("7 - 5 / (8 + 11) * 9 + 7"), 11.63, 0.01
     assert_in_delta Calc.main("7 - 14 * 14 - 10 / (15 + 8)"), -189.43, 0.01
     assert Calc.main("15 + 14 * (6 - 6) * 8 * 11") == 15
+    assert Calc.main("(1 + 2) * 3 - 4 / 2") == 7
+    assert Calc.main("((1 + 2) * 3 - 4) / 2") == 2.5
+    assert Calc.main("((1 + 2) * 3 - 4) / 2 + ((1 + 2) * 3 - 4) / 2") == 5
+    assert Calc.main("((1 + 2) * 3 - 4) / 2 + (1 + 2) * 3 - 4 / 2") == 9.5
   end
 
 end
