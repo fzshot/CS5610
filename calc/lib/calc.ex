@@ -22,48 +22,27 @@ defmodule Calc do
     |> parse_number
   end
 
-  def eval(input) do
+  def eval(input, stack) do
     cond do
-      is_number(input) ->
-        input
-      length(input) == 1 ->
-          hd(input)
+      Enum.empty?(input) ->
+        hd(stack)
       true ->
-        [a,s|t] = input
+        [h|t] = input
         cond do
-          is_number(a) ->
-            cond do
-              s == "+" ->
-                a + eval(t)
-              s == "-" ->
-                [b|t] = t
-                b = -1 * b
-                a + eval([b] ++ t)
-              s == "*" ->
-                [b|t] = t
-                cond do
-                  b == "(" ->
-                    [head, tail] = find_par(["("], [], t)
-                    head = eval(head)
-                    eval([a * head] ++ tail)
-                  true ->
-                    eval([a * b] ++ t)
-                end
-              s == "/" ->
-                [b|t] = t
-                cond do
-                  b == "(" ->
-                    [head, tail] = find_par(["("], [], t)
-                    head = eval(head)
-                    eval([a / head] ++ tail)
-                  true ->
-                    eval([a / b] ++ t)
-                end
-            end
+          is_number(h) ->
+            eval(t, [h] ++ stack)
           true ->
-            [head, tail] = find_par(["("], [], [s] ++ t)
-            head = eval(head)
-            eval([head] ++ tail)
+            [b,a|t_stack] = stack
+            case h do
+              "+" ->
+                eval(t, [a+b] ++ t_stack)
+              "-" ->
+                eval(t, [a-b] ++ t_stack)
+              "*" ->
+                eval(t, [a*b] ++ t_stack)
+              "/" ->
+                eval(t, [a/b] ++ t_stack)
+            end
         end
     end
   end
@@ -85,26 +64,76 @@ defmodule Calc do
           elem(Float.parse(x), 0)
       end
     end)
-    |> eval
+    |> to_postfix([], [])
   end
 
-  def find_par(par, head, tail) do
+  def to_postfix(input, stack, result) do
     cond do
-      Enum.empty?(par) ->
-        [head, tail]
+      Enum.empty?(input) ->
+        result ++ stack
+        |> eval([])
       true ->
-        [h_tail|t_tail] = tail
+        [h|t] = input
         cond do
-          h_tail == "(" ->
-            find_par(["("] ++ par, head, t_tail)
-          h_tail == ")" ->
-            find_par(tl(par), eval(head), t_tail)
+          is_number(h) ->
+            to_postfix(t, stack, result ++ [h])
+          Enum.empty?(stack) ->
+            cond do
+              is_number(h) ->
+                to_postfix(t, stack, result ++ [h])
+              true ->
+                to_postfix(t, [h] ++ stack, result)
+            end
           true ->
             cond do
-              is_number(head) ->
-                find_par(par, [head] ++ [h_tail], t_tail)
+               (h == "+") or (h == "-") ->
+                cond do
+                  Enum.empty?(stack) ->
+                    to_postfix(t, [h] ++ stack, result)
+                  true ->
+                    [h_stack|t_stack] = stack
+                    cond do
+                      h_stack == "(" ->
+                        to_postfix(t, [h] ++ stack, result)
+                      true ->
+                        cond do
+                          Enum.empty?(t_stack) ->
+                            to_postfix(t, [h] ++ t_stack, result ++ [h_stack])
+                          true ->
+                            to_postfix(input, t_stack, result ++ [h_stack])
+                        end
+                    end
+                end
+              (h == "*") or (h == "/") ->
+                cond do
+                  Enum.empty?(stack) ->
+                    to_postfix(t, [h] ++ stack, result)
+                  true ->
+                    [h_stack|t_stack] = stack
+                    cond do
+                      (h_stack == "*") or (h_stack == "/") ->
+                        cond do
+                          Enum.empty?(t_stack) ->
+                            to_postfix(t, [h] ++ t_stack, result ++ [h_stack])
+                          true ->
+                            to_postfix(input, t_stack, result ++ [h_stack])
+                        end
+                      true ->
+                        to_postfix(t, [h] ++ stack, result)
+                    end
+                end
+              h == "(" ->
+                to_postfix(t, [h] ++ stack, result)
+              h == ")" ->
+                [h_stack|t_stack] = stack
+                cond do
+                  h_stack == "(" ->
+                    to_postfix(t, t_stack, result)
+                  true ->
+                    to_postfix(input, t_stack, result ++ [h_stack])
+                end
               true ->
-                find_par(par, head ++ [h_tail], t_tail)
+                to_postfix(t, stack, result ++ [h])
             end
         end
     end
