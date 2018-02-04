@@ -3,16 +3,6 @@ defmodule Calc do
   Documentation for Calc.
   """
 
-  # @doc """
-  # Hello world.
-
-  # ## Examples
-
-  #     iex> Calc.hello
-  #     :world
-
-  # """
-
   def main(input) do
     # IO.gets("Enter input: ")
     # |> String.split()
