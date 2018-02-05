@@ -77,7 +77,13 @@ defmodule Calc do
         (x == "+") or (x == "-") or (x == "*") or (x == "/") or (x == "(") or (x == ")")->
           x
         true ->
-          elem(Float.parse(x), 0)
+          {number, rest} = Float.parse(x)
+          cond do
+            String.length(rest) == 0 ->
+              number
+            true ->
+              raise ArgumentError, message: "Invalid Input"
+          end
       end
     end)
     |> (fn(x) ->
