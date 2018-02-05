@@ -1,8 +1,8 @@
 defmodule Calc do
   @moduledoc """
-  Provides a function 'main/0' to get user input of
+  Provides a function `main/0` to get user input of
   arithmetic expression, and prints the calculation result.
-  Provides a function 'eval/1' to evaluate a arithmetic expression
+  Provides a function `eval/1` to evaluate a arithmetic expression
   and return a number.
   """
 
