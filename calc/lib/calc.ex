@@ -130,12 +130,7 @@ defmodule Calc do
           is_number(h) ->
             to_postfix(t, stack, result ++ [h])
           Enum.empty?(stack) ->
-            cond do
-              is_number(h) ->
-                to_postfix(t, stack, result ++ [h])
-              true ->
-                to_postfix(t, [h] ++ stack, result)
-            end
+            to_postfix(t, [h] ++ stack, result)
           true ->
             cond do
                (h == "+") or (h == "-") ->
