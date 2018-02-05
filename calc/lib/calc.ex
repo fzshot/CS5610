@@ -3,16 +3,19 @@ defmodule Calc do
   Documentation for Calc.
   """
 
-  def main(input) do
-    # IO.gets("Enter input: ")
-    # |> String.split()
-    # |> eval([], [])
-    # main()
+  def main() do
+    IO.gets("Enter input: ")
+    |> eval
+    |> IO.puts
+    main()
+  end
+
+  def eval(input) do
     input
     |> parse_number
   end
 
-  def eval(input, stack) do
+  defp calculation(input, stack) do
     cond do
       Enum.empty?(input) ->
         hd(stack)
@@ -20,24 +23,29 @@ defmodule Calc do
         [h|t] = input
         cond do
           is_number(h) ->
-            eval(t, [h] ++ stack)
+            calculation(t, [h] ++ stack)
           true ->
             [b,a|t_stack] = stack
             case h do
               "+" ->
-                eval(t, [a+b] ++ t_stack)
+                calculation(t, [a+b] ++ t_stack)
               "-" ->
-                eval(t, [a-b] ++ t_stack)
+                calculation(t, [a-b] ++ t_stack)
               "*" ->
-                eval(t, [a*b] ++ t_stack)
+                calculation(t, [a*b] ++ t_stack)
               "/" ->
-                eval(t, [a/b] ++ t_stack)
+                cond do
+                  b == 0 ->
+                    raise ArithmeticError, message: "Divide by zero"
+                  true ->
+                    calculation(t, [a/b] ++ t_stack)
+                end
             end
         end
     end
   end
 
-  def parse_number(input) do
+  defp parse_number(input) do
     input
     |> String.replace("(", " ( ")
     |> String.replace(")", " ) ")
@@ -54,14 +62,50 @@ defmodule Calc do
           elem(Float.parse(x), 0)
       end
     end)
+    |> (fn(x) ->
+      valid_par(x, x, [])
+      end).()
     |> to_postfix([], [])
   end
 
-  def to_postfix(input, stack, result) do
+  defp valid_par(input, process, stack) do
+    cond do
+      Enum.empty?(process) ->
+        cond do
+          Enum.empty?(stack) ->
+            input
+          true ->
+            raise ArgumentError, message: "Parenthesis Error"
+        end
+      true ->
+        [h|t] = process
+        case h do
+          "(" ->
+            valid_par(input, t, [h]++stack)
+          ")" ->
+            cond do
+              Enum.empty?(stack) ->
+                raise ArgumentError, message: "Parenthesis Error"
+              true ->
+                [h_stack|t_stack] = stack
+                case h_stack do
+                  "(" ->
+                    valid_par(input, t, t_stack)
+                  _ ->
+                    raise ArgumentError, message: "Parenthesis Error"
+                end
+            end
+          _ ->
+            valid_par(input, t, stack)
+        end
+    end
+  end
+
+  defp to_postfix(input, stack, result) do
     cond do
       Enum.empty?(input) ->
         result ++ stack
-        |> eval([])
+        |> calculation([])
       true ->
         [h|t] = input
         cond do
