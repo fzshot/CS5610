@@ -26,15 +26,23 @@ defmodule CalcTest do
     assert Calc.eval("((1 + 2) * 3 - 4) / 2 + (1 + 2) * 3 - 4 / 2") == 9.5
   end
 
-  test "float number" do
+  test "more tests" do
     assert_in_delta Calc.eval("((1.25 + 45.67) * 2.75 - 4.25) / 2"), 62.39, 0.01
+    assert_in_delta Calc.eval("5 / -10 + -2.3 * 3"), -7.4, 0.1
+    assert_in_delta Calc.eval("7 - 5 / ((8 + 11) * 9) + 7"), 13.97, 0.01
+    assert_in_delta Calc.eval("7 - (5 / ((8  +  11) * 9) + 7)"), -0.0292, 0.0001
+    assert_in_delta Calc.eval("(7 - 5 / ((8 + 11) * 9)) + 7"), 13.97, 0.01
+    assert_in_delta Calc.eval("7 - 14 * (14 - 10 / (15 + 8))"), -182.91, 0.01
   end
 
-  test "more tests" do
-    assert_in_delta Calc.eval("7-5/((8+11)*9)+7"), 13.97, 0.01
-    assert_in_delta Calc.eval("7-(5/((8 + 11)*9)+7)"), -0.0292, 0.0001
-    assert_in_delta Calc.eval("(7-5/((8+11)*9))+7"), 13.97, 0.01
-    assert_in_delta Calc.eval("7-14*(14-10/(15+8))"), -182.91, 0.01
+  test "exception" do
+    assert_raise ArgumentError, fn -> Calc.eval("2 + + 3") end
+    assert_raise ArgumentError, fn -> Calc.eval("( + )") end
+    assert_raise ArgumentError, fn -> Calc.eval(" + ") end
+    assert_raise ArgumentError, fn -> Calc.eval("2 + 3)") end
+    assert_raise ArgumentError, fn -> Calc.eval("(2 + 3") end
+    assert_raise ArithmeticError, fn -> Calc.eval("2 / 0") end
+    assert_raise ArithmeticError, fn -> Calc.eval("2 / (2 - 2)") end
   end
 
 

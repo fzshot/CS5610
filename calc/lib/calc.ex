@@ -1,8 +1,14 @@
 defmodule Calc do
   @moduledoc """
-  Documentation for Calc.
+  Provides a function 'main/0' to get user input of
+  arithmetic expression, and prints the calculation result.
+  Provides a function 'eval/1' to evaluate a arithmetic expression
+  and return a number.
   """
 
+  @doc """
+  Prompt arithmetic expression input and prints result
+  """
   def main() do
     IO.gets("Enter input: ")
     |> eval
@@ -10,6 +16,12 @@ defmodule Calc do
     main()
   end
 
+  @doc """
+  Evaluate an arithmetic expression and return a number
+
+  ## Parameters
+    - input: String that representes an arithmetic expression
+  """
   def eval(input) do
     input
     |> parse_number
@@ -25,20 +37,30 @@ defmodule Calc do
           is_number(h) ->
             calculation(t, [h] ++ stack)
           true ->
-            [b,a|t_stack] = stack
-            case h do
-              "+" ->
-                calculation(t, [a+b] ++ t_stack)
-              "-" ->
-                calculation(t, [a-b] ++ t_stack)
-              "*" ->
-                calculation(t, [a*b] ++ t_stack)
-              "/" ->
+            cond do
+              length(stack) < 2 ->
+                raise ArgumentError, message: "Invalid Input"
+              true ->
+                [b,a|t_stack] = stack
                 cond do
-                  b == 0 ->
-                    raise ArithmeticError, message: "Divide by zero"
+                  is_number(a) and is_number(b) ->
+                    case h do
+                      "+" ->
+                        calculation(t, [a+b] ++ t_stack)
+                      "-" ->
+                        calculation(t, [a-b] ++ t_stack)
+                      "*" ->
+                        calculation(t, [a*b] ++ t_stack)
+                      "/" ->
+                        cond do
+                          b == 0 ->
+                            raise ArithmeticError, message: "Divide by zero"
+                          true ->
+                            calculation(t, [a/b] ++ t_stack)
+                        end
+                    end
                   true ->
-                    calculation(t, [a/b] ++ t_stack)
+                    raise ArgumentError, message: "Invalid Input"
                 end
             end
         end
@@ -49,10 +71,6 @@ defmodule Calc do
     input
     |> String.replace("(", " ( ")
     |> String.replace(")", " ) ")
-    |> String.replace("+", " + ")
-    |> String.replace("-", " - ")
-    |> String.replace("*", " * ")
-    |> String.replace("/", " / ")
     |> String.split
     |> Enum.map(fn(x) ->
       cond do
