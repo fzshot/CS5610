@@ -139,7 +139,7 @@ defmodule Calc do
             to_postfix(t, [h] ++ stack, result)
           true ->
             cond do
-               (h == "+") or (h == "-") ->
+              (h == "+") or (h == "-") ->
                 cond do
                   Enum.empty?(stack) ->
                     to_postfix(t, [h] ++ stack, result)
