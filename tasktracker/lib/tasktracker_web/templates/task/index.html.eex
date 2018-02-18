@@ -3,9 +3,11 @@
 <table class="table">
   <thead>
     <tr>
+      <th>Task Creator</th>
+      <th>Assigned To</th>
       <th>Title</th>
       <th>Body</th>
-      <th>Time</th>
+      <th>Time Spent</th>
       <th>Complete</th>
 
       <th></th>
@@ -14,9 +16,13 @@
   <tbody>
 <%= for task <- @tasks do %>
     <tr>
+      <td><%= task.creator.name %></td>
+      <td><%= task.user.name %></td>
       <td><%= task.title %></td>
       <td><%= task.body %></td>
-      <td><%= task.time %></td>
+      <td>
+          <%= task.hours %>:<%= task.mins %>
+      </td>
       <td><%= task.complete %></td>
 
       <td class="text-right">

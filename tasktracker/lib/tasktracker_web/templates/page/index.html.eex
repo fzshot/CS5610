@@ -14,5 +14,6 @@
         </div>
     </div>
 <% else %>
-    <p> Logged In</p>
+    <%= render "tasks.html", tasks: @tasks, conn: @conn, user_id: @user_id%>
+    <!-- <p> Logged In</p> -->
 <% end %>

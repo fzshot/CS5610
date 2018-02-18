@@ -5,9 +5,30 @@
     </div>
   <% end %>
 
+  <%= if @current_user do %>
+    <div class="form-group" style="display:none">
+    <%= text_input f, :creator_id, class: "form-control", value: @current_user.id%>
+    </div>
+  <% else %>
+    <div class="form-group">
+    <%= label f, :creator_id, class: "control-label" %>
+    <%= text_input f, :creator_id, class: "form-control" %>
+    <%= error_tag f, :creator_id %>
+    </div>
+
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :user_id, class: "control-label" do %>
+        Assign To
+    <% end %>
+    <%= text_input f, :user_id, class: "form-control", placeholder: "alice@example.com;bob@example.com"%>
+    <%= error_tag f, :user_id %>
+  </div>
+
   <div class="form-group">
     <%= label f, :title, class: "control-label" %>
-    <%= textarea f, :title, class: "form-control" %>
+    <%= text_input f, :title, class: "form-control" %>
     <%= error_tag f, :title %>
   </div>
 
@@ -18,13 +39,22 @@
   </div>
 
   <div class="form-group">
-    <%= label f, :time, class: "control-label" %>
-    <%= number_input f, :time, class: "form-control" , min: 0%>
-    <%= error_tag f, :time %>
+    <%= label f, :hours, class: "control-label" do %>
+        Hours Spent
+    <% end %>
+    <%= number_input f, :hours, class: "form-control" , min: 0 ,value: 0%>
+    <%= error_tag f, :hours %>
+    <%= label f, :mins, class: "control-label" do %>
+        Minutes Spent (minutes, 15min increment)
+    <% end %>
+    <%= number_input f, :mins, class: "form-control" , min: 0, max: 45, step: 15, value: 0%>
+    <%= error_tag f, :mins %>
   </div>
 
   <div class="form-group">
-    <%= label f, :complete, class: "control-label" %>
+    <%= label f, :complete, class: "control-label" do %>
+        Complete?
+    <% end %>
     <%= checkbox f, :complete, class: "checkbox" %>
     <%= error_tag f, :complete %>
   </div>

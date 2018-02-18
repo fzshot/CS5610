@@ -13,14 +13,6 @@
 
   <body>
     <div class="container">
-        <!-- <header class="header"> -->
-        <!-- <nav role="navigation"> -->
-        <!-- <ul class="nav nav-pills pull-right"> -->
-        <!-- <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li> -->
-        <!-- </ul> -->
-        <!-- </nav> -->
-        <!-- <span class="logo"></span> -->
-        <!-- </header> -->
 
         <%= if get_flash(@conn, :info) do %>
             <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
@@ -39,6 +31,12 @@
                 <% else %>
                     <p>Not logged in
                 <% end %>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-auto align-self-center">
+                <h1>Task Tracker</h1>
             </div>
         </div>
 
